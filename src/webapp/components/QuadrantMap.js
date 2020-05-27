@@ -6,41 +6,34 @@ import ReactMapboxGl, {
   ZoomControl
 } from "react-mapbox-gl";
 import { LngLat } from "mapbox-gl";
+import { bbox } from "@turf/turf";
 import quadrantsGeoJSON from "../../assets/flatbush.json";
-import { findBounds } from "../helpers/mapbox-coordinates";
 
 // get all coords in quadrantsGeoJSON to find bounds
-const FLATBUSH_BOUNDS = findBounds(
-  quadrantsGeoJSON.features.reduce((acc, f) => {
-    const lnglats = f.geometry.coordinates[0].map(
-      coord => new LngLat(coord[0], coord[1])
-    );
-    return acc.concat(lnglats);
-  }, [])
-);
+const FLATBUSH_BOUNDS = bbox(quadrantsGeoJSON);
 
 const FLATBUSH_CENTER_COORD = new LngLat(-73.943018, 40.671254);
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
+// check to make sure we have mapbox token
+// if no access token is set, we show the user placeholder text
 const MapboxMap = MAPBOX_TOKEN
   ? ReactMapboxGl({
       accessToken: MAPBOX_TOKEN
     })
   : () => (
-    <div>
+      <div>
         Mapbox token is missing. This means that the map cannot be displayed,
         but should not affect the functionality of the page. Please inform
         <a href="https://crownheightsmutualaid.slack.com/archives/C010AUQ6DFD">
           #tech.
-      </a>
+        </a>
       </div>
     );
 
 const QuadrantMap = ({ location }) => {
   const lnglat = location && new LngLat(location.lng, location.lat);
-  const bounds = lnglat
-    ? findBounds([...FLATBUSH_BOUNDS, lnglat])
-    : FLATBUSH_BOUNDS;
+  const bounds = lnglat ? bbox([...FLATBUSH_BOUNDS, lnglat]) : FLATBUSH_BOUNDS;
 
   return (
     <MapboxMap
