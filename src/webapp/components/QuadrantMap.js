@@ -33,7 +33,8 @@ const MapboxMap = MAPBOX_TOKEN
 
 const QuadrantMap = ({ location }) => {
   const lnglat = location && new LngLat(location.lng, location.lat);
-  const bounds = lnglat ? bbox([...FLATBUSH_BOUNDS, lnglat]) : FLATBUSH_BOUNDS;
+  // FIXME:  using these bounds in fitBounds would center map on new address.  Getting an error with geometry types.
+  // const bounds = lnglat ? bbox([...FLATBUSH_BOUNDS, lnglat]) : FLATBUSH_BOUNDS;
 
   return (
     <MapboxMap
@@ -43,7 +44,7 @@ const QuadrantMap = ({ location }) => {
         height: "350px",
         width: "100%"
       }}
-      fitBounds={bounds}
+      fitBounds={FLATBUSH_BOUNDS}
       fitBoundsOptions={{
         padding: {
           top: 24,
